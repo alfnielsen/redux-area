@@ -1,5 +1,7 @@
 # Redux-area
 
+> Unless you don't want to use saga's, it recommended to install [`redux-saga-area`](https://www.npmjs.com/package/redux-saga-area) instead of `redux-area`
+
 **Short:** `Simplified strongly typed redux`
 
 When defining redux actions and reducers with typescript,
@@ -30,8 +32,6 @@ See Github Wiki for full [Documentation](https://github.com/alfnielsen/redux-are
 **redux-saga-area** Same functionality with added [redux-saga](https://redux-saga.js.org/) functionality
 
 [redux-saga-area](https://www.npmjs.com/package/react-redux-area)
-
-> Unless you don't want to use saga's, it recommended to install `redux-saga-area` instead of `redux-area`
 
 **react-redux-area** is another module the add React specific functionality to redux-area:
 
