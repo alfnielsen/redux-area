@@ -1,6 +1,6 @@
 # Redux-area
 
-> Unless you don't want to use saga's, it recommended to install [`redux-saga-area`](https://www.npmjs.com/package/redux-saga-area) instead of `redux-area`
+> Unless you don't want to use saga's, it's recommended to install [`redux-saga-area`](https://www.npmjs.com/package/redux-saga-area) instead of `redux-area`
 
 **Short:** `Simplified strongly typed redux`
 
