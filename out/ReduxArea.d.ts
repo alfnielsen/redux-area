@@ -1,6 +1,7 @@
-import { Draft, Immutable } from "immer";
+import { Draft, Immutable } from 'immer';
 import { AnyAction, Reducer } from 'redux';
 export declare type Func = (...args: any) => any;
+export declare type FuncGen<TAction extends Func> = (action: ReturnType<TAction>) => Generator<any, void, unknown>;
 export declare type ReduxAction = ((...args: any) => AnyAction) & {
     name: string;
     reducer: Reducer;
@@ -56,7 +57,7 @@ export declare class Area<TBaseState, TAreaState, TBaseFailureAction extends Fun
     getSuccessName(name: string): string;
     getFailureName(name: string): string;
     getClearName(name: string): string;
-    rootReducer(): (state: TAreaState | undefined, action: AnyAction) => any;
+    getRootReducer(): (state: TAreaState | undefined, action: AnyAction) => any;
     /**
      * Add a single action. \
      * Optional 'interceptNormal' in options will effect this. \
@@ -97,7 +98,7 @@ export declare class Area<TBaseState, TAreaState, TBaseFailureAction extends Fun
         };
     };
     /**
-     * Add 3 action (Request, success and failure). \
+     * Add 4 action (Request, success, failure and clear). \
      * Optional 'interceptRequest', 'interceptSuccess' and 'interceptFailure' in options will effect this. \
      * You can omit any 'action' and/or 'produce' if its not needed. (expect one of the final areaFailure of produceFailure) \
      * @param name
@@ -3185,10 +3186,4 @@ export interface IFetchAreaBaseState {
         };
     };
 }
-export declare var SimpleAreaBase: (baseName?: string) => AreaBase<{}, Func, () => {}>;
-export declare var FetchAreaBase: (baseName?: string) => AreaBase<IFetchAreaBaseState, (error: Error) => {
-    error: Error;
-}, ({ actionName }: ActionCreatorInterceptorOptions) => {
-    actionName: string;
-}>;
 export default AreaBase;

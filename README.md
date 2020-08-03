@@ -23,106 +23,19 @@ Github [Source Code](https://github.com/alfnielsen/redux-area) (The npm [package
 
 See codesandbox [Demo in React](https://codesandbox.io/s/redux-area-base-ex-tb1lr?fontsize=14&hidenavigation=1&theme=dark)
 
-See Github Wiki for full [Documentation](https://github.com/alfnielsen/redux-area/wiki) (The wiki includes all new options, new features and a guide for upgrading from v0.2.x to v0.4.x)
+See Github Wiki for full [Documentation](https://github.com/alfnielsen/redux-area/wiki)
 
-**react-redux-area** is a nother module the add React specific functionality to redux-area:
+## See also
 
-[react-redux-area on npmjs](https://www.npmjs.com/package/react-redux-area)
+**redux-saga-area** Same functionality with added [redux-saga](https://redux-saga.js.org/) functionality
 
-[react-redux-area github](github.com/alfnielsen/react-redux-area)
+[redux-saga-area](https://www.npmjs.com/package/react-redux-area)
 
-## Usage
+> Unless you don't want to use saga's, it recommended to install `redux-saga-area` instead of `redux-area`
 
-AppAreaBase.ts
-```ts
+**react-redux-area** is another module the add React specific functionality to redux-area:
 
-import { FetchAreaBase } from 'redux-area'
-const AppAreaBase = FetchAreaBase("MyApp")
-export default AppAreaBase
-
-```
-
-MyArea.ts
-
-```ts
-
-import { AppAreaBase } from './AppAreaBase'
-
-// State (Optional)
-export interface IMyAreaState {
-   name: string,
-   // loading: boolean // <- This is provided from the AreaBase
-   // error?: Error // <- This is provided from the AreaBase
-}
-
-// Create Area
-const area = AppAreaBase.Create<IMyAreaState>('MyArea', {
-   name: ''
-)
-
-// Add single action
-const updateName = area
-   .add('updateName')
-   .action((name: string) => ({
-      name
-   }))
-   .produce((draft, { name }) => {
-      draft.name = name
-   })
-
-// Add single empty action (action has only a type and no other values)
-const clearName = area
-   .add('clearName')
-   .produce(draft => {
-      draft.name = ''
-   })
-
-// Add fetch action (3 actions)
-const getName = area
-   .addFetch('getName')
-   .action((id: number) => ({ id }))
-   .produce((draft) => {
-      draft.name = ''
-   })
-   .successAction((name: string) => ({ name }))
-   .successProduce((draft, { name }) => {
-      draft.name = name
-   })
-   .failureAction((error: Error) => ({ error }))
-   .failureProduce((draft, { error }) => {
-      draft.error = error
-   })
-
-// We don't need to add empty action (They will still be created in the 'getNewName')
-export const getNewName = area
-   .addFetch('getNewName')
-   .successAction((newName: string) => ({ newName }))
-   .successProduce((draft, { newName }) => {
-      draft.name = newName
-   })
-   .baseFailure()
-
-// Export Redux actions
-export const MyAreaActions = {
-   updateName,
-   clearName,
-   getNameFetch: getName.fetch,
-   getNameSuccess: getName.success,
-   getNameFailure: getName.failure,
-   // By exporting the 'getNewName',
-   // Saga's ect. can get the success and failure methods,
-   // and you only have to expose then fetch to views.
-   // (Or you can add all like the 'getName')
-   getNewName: getNewName.fetch
-}
-// You can get the action type definition for Saga's, custom reducers, ect. like this:
-type UpdateNameActionType = typeof updateName.type
-
-// Export initial state for area
-export const MyAreaInitState = area.initialState
-// Export root-reducer for area
-export const MyAreaRootReducer = area.rootReducer()
-```
+[react-redux-area](https://www.npmjs.com/package/react-redux-area)
 
 ## Install
 
@@ -136,10 +49,16 @@ Or
 yarn add redux-area
 ```
 
+You need to have installed: "immer": "^5.x", "redux": "^4.x",
+
+Full install
+
+```sh
+yarn add immer redux redux-area
+```
+
 ## Demo
 
 _(editable codesandbox.io)_
 
 Demo: [Demo in React](https://codesandbox.io/s/redux-area-base-ex-tb1lr?fontsize=14&hidenavigation=1&theme=dark)
-
-[![Demo picture](./ExImage.png)](https://codesandbox.io/s/redux-area-base-ex-tb1lr?fontsize=14&hidenavigation=1&theme=dark)

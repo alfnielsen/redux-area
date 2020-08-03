@@ -1,3 +1,27 @@
+## 0.5.0
+
+### News
+
+There are now another module called `redux-saga-area`
+
+It contains the same functionality as this but includes redux-saga functionality.
+
+`redux-area` is a stripped version of the `redux-saga-area`, but will still be maintained.
+
+### Breaking Changes
+
+`rootReducer()` is now `getRootReducer()`
+
+#### Changed from `dependencies` to `peerDependencies`
+
+`immer` and `redux` is now `peerDependencies` to avid version problems.
+
+This means that you project need to have them installed:
+
+> npm i immer redux
+> or
+> yarn add immer redux
+
 ## 0.4.19
 
 Add `Create` to `AreaBase`.

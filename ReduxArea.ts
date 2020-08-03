@@ -1,7 +1,8 @@
-import { Draft, Immutable, produce } from "immer"
+import { Draft, Immutable, produce } from 'immer'
 import { AnyAction, Reducer } from 'redux'
 
 export type Func = (...args: any) => any
+export type FuncGen<TAction extends Func> = (action: ReturnType<TAction>) => Generator<any, void, unknown>
 export type ReduxAction = ((...args: any) => AnyAction) & { name: string; reducer: Reducer }
 export type AnyActionBase = { type: string }
 export type EmptyActionType<AreaActionType> = { type: string } & AreaActionType
@@ -17,6 +18,8 @@ export type FetchAreaAction<TBaseState, TAreaState, TFetchAction extends Func, T
    failure: AreaAction<TBaseState, TAreaState, TFailureAction, AreaActionType>
    actionName: string
 }
+
+
 export type TIntercept<TState, AreaActionType> = (draft: Draft<TState>, action: EmptyActionType<AreaActionType>) => void
 export type TActionIntercept<TState> = (draft: Draft<TState>, action: ActionCreatorInterceptorOptions) => void
 
@@ -27,6 +30,7 @@ export type AreaAction<TBaseState, TAreaState, TAction extends Func, AreaActionT
    use: (draft: Draft<TBaseState & TAreaState>, action: ReturnType<TAction>) => void,
    type: ReturnTypeAction<TAction, AreaActionType>
 }
+
 
 export class Area<
    TBaseState,
@@ -141,7 +145,7 @@ export class Area<
       return this.constructActionName(name, this.clearNamePostfix)
    }
 
-   public rootReducer() {
+   public getRootReducer() {
       return (state: TAreaState = this.initialState, action: AnyAction) => {
          const actionArea = this.actions.find(x => x.name === action.type)
          if (actionArea) {
@@ -165,7 +169,7 @@ export class Area<
    }
 
    /**
-    * Add 3 action (Request, success and failure). \
+    * Add 4 action (Request, success, failure and clear). \
     * Optional 'interceptRequest', 'interceptSuccess' and 'interceptFailure' in options will effect this. \
     * You can omit any 'action' and/or 'produce' if its not needed. (expect one of the final areaFailure of produceFailure) \
     * @param name
@@ -813,61 +817,6 @@ export interface IFetchAreaBaseState {
       }
    },
 }
-
-export var SimpleAreaBase = (baseName = "App") => new AreaBase({
-   baseNamePrefix: "@@" + baseName,
-   addNameSlashes: true,
-   addShortNameSlashes: true,
-   baseState: {},
-   baseActionsIntercept: (/*{ actionName }: ActionCreatorInterceptorOptions*/) => ({/*actionName*/ }), // simple action don't add actionName
-})
-
-
-
-export var FetchAreaBase = (baseName = "App") => new AreaBase({
-   baseNamePrefix: "@@" + baseName,
-   addNameSlashes: true,
-   addShortNameSlashes: true,
-   baseState: {
-      loading: false,
-      loadingMap: {},
-      error: undefined,
-      errorMap: {},
-      errorMessage: ''
-   } as IFetchAreaBaseState,
-   baseFailureAction: (error: Error) => ({ error }),
-   baseFailureProducer: ((draft, { error, actionName }) => {
-      draft.error = error
-      draft.errorMessage = error.message
-      draft.errorMap[actionName] = {
-         error,
-         message: error.message,
-         count: draft.errorMap[actionName] ? draft.errorMap[actionName].count + 1 : 1,
-         currentCount: draft.errorMap[actionName] ? draft.errorMap[actionName].count + 1 : 1
-      }
-   }),
-   baseActionsIntercept: ({ actionName }: ActionCreatorInterceptorOptions) => ({
-      actionName
-   }),
-   baseInterceptors: {
-      "Request": [(draft, { actionName }) => {
-         draft.loading = true
-         draft.loadingMap[actionName] = true
-      }],
-      "Success": [(draft, { actionName }) => {
-         draft.loading = false
-         draft.loadingMap[actionName] = false
-         if (draft.errorMap[actionName]) {
-            draft.errorMap[actionName].currentCount = 0
-         }
-      }],
-      "Failure": [(draft, { actionName }) => {
-         draft.loading = false
-         draft.loadingMap[actionName] = false
-      }]
-   }
-})
-
 
 export default AreaBase
 

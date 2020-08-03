@@ -1,4 +1,7 @@
-import AreaBase, { FetchAreaBase } from "./ReduxArea"
+import { call } from 'redux-saga/effects'
+
+import { AppAreaBase } from "./example-areabase"
+import AreaBase from "./ReduxArea"
 
 // Optional state interface.
 // You can also get it from (typeof area.initialState)
@@ -8,14 +11,12 @@ export interface IMyAreaState {
    readonly types: string[]
 }
 
-const area = FetchAreaBase("@@MyApp").CreateArea({
-   namePrefix: "MyArea",
-   state: {
-      name: '',
-      lastCall: '',
-      types: []
-   } as IMyAreaState
+const area = AppAreaBase.Create<IMyAreaState>("MyArea", {
+   name: '',
+   lastCall: '',
+   types: []
 })
+
 
 const getAllType = area
    .addFetch('getAllType')
@@ -41,6 +42,7 @@ const clearName = area
       draft.name = undefined
    })
 
+interface IUser { id: number, name: string, userName: string, email: string }
 const getName = area
    .addFetch('getName')
    .action((id: number) => ({ id }))
@@ -51,7 +53,6 @@ const getName = area
    .failureAction((error: Error) => ({ error }))
    .failureProduce((draft, { error }) => {
       draft.loading = false
-      draft.error = error
       // write you own failure for this action
    })
 
@@ -81,7 +82,9 @@ export const MyAreaActions = {
 }
 
 export const MyAreaInitState = area.initialState
-export const MyAreaRootReducer = area.rootReducer()
+export const MyArea = area
+// Its recommended to export the Area and use its getRootReducer in the Store config, instead of this:
+export const MyAreaRootReducer = area.getRootReducer()
 
 
 // -------- Entity Area Base

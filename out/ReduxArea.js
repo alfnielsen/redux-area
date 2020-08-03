@@ -424,7 +424,7 @@ class Area {
     getClearName(name) {
         return this.constructActionName(name, this.clearNamePostfix);
     }
-    rootReducer() {
+    getRootReducer() {
         return (state = this.initialState, action) => {
             const actionArea = this.actions.find(x => x.name === action.type);
             if (actionArea) {
@@ -446,7 +446,7 @@ class Area {
         return this.createAddChain(name, ["All", "Normal", ...(this.areaOptions.tags || []), ...tags]);
     }
     /**
-     * Add 3 action (Request, success and failure). \
+     * Add 4 action (Request, success, failure and clear). \
      * Optional 'interceptRequest', 'interceptSuccess' and 'interceptFailure' in options will effect this. \
      * You can omit any 'action' and/or 'produce' if its not needed. (expect one of the final areaFailure of produceFailure) \
      * @param name
@@ -475,55 +475,5 @@ class AreaBase {
     }
 }
 exports.AreaBase = AreaBase;
-exports.SimpleAreaBase = (baseName = "App") => new AreaBase({
-    baseNamePrefix: "@@" + baseName,
-    addNameSlashes: true,
-    addShortNameSlashes: true,
-    baseState: {},
-    baseActionsIntercept: ( /*{ actionName }: ActionCreatorInterceptorOptions*/) => ({ /*actionName*/}),
-});
-exports.FetchAreaBase = (baseName = "App") => new AreaBase({
-    baseNamePrefix: "@@" + baseName,
-    addNameSlashes: true,
-    addShortNameSlashes: true,
-    baseState: {
-        loading: false,
-        loadingMap: {},
-        error: undefined,
-        errorMap: {},
-        errorMessage: ''
-    },
-    baseFailureAction: (error) => ({ error }),
-    baseFailureProducer: ((draft, { error, actionName }) => {
-        draft.error = error;
-        draft.errorMessage = error.message;
-        draft.errorMap[actionName] = {
-            error,
-            message: error.message,
-            count: draft.errorMap[actionName] ? draft.errorMap[actionName].count + 1 : 1,
-            currentCount: draft.errorMap[actionName] ? draft.errorMap[actionName].count + 1 : 1
-        };
-    }),
-    baseActionsIntercept: ({ actionName }) => ({
-        actionName
-    }),
-    baseInterceptors: {
-        "Request": [(draft, { actionName }) => {
-                draft.loading = true;
-                draft.loadingMap[actionName] = true;
-            }],
-        "Success": [(draft, { actionName }) => {
-                draft.loading = false;
-                draft.loadingMap[actionName] = false;
-                if (draft.errorMap[actionName]) {
-                    draft.errorMap[actionName].currentCount = 0;
-                }
-            }],
-        "Failure": [(draft, { actionName }) => {
-                draft.loading = false;
-                draft.loadingMap[actionName] = false;
-            }]
-    }
-});
 exports.default = AreaBase;
 //# sourceMappingURL=ReduxArea.js.map
